@@ -44,3 +44,33 @@ class ContactListWindow(MainWindow):
                 digit_count += 1
 
         self._add_button.setEnabled(name != "" and digit_count == 10)
+        self._add_button.clicked.connect(self.__on_add_button_clicked)
+        
+        
+    def __input_recieved(self) -> None:
+        """Clear the input widgets and sets the focus to the name line widget."""
+
+        self._name_line_edit.clear()
+        self._phone_line_edit.clear()
+        self._name_line_edit.setFocus()
+        
+    @Slot()
+    def __on_add_button_clicked(self) -> None:
+        """Handles the add button event."""
+
+        row = self._contact_table.rowCount()
+        self._contact_table.insertRow(row)
+
+        name = self._name_line_edit.text().strip()
+        phone = self._phone_line_edit.text()
+
+        name_item = QTableWidgetItem()
+        name_item.setText(name)
+
+        phone_item = QTableWidgetItem()
+        phone_item.setText(phone)
+
+        self._contact_table.setItem(row, 0, name_item)
+        self._contact_table.setItem(row, 1, phone_item)
+
+        self.__input_recieved()
