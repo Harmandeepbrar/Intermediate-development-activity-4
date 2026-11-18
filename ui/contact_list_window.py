@@ -28,3 +28,19 @@ class ContactListWindow(MainWindow):
         self._add_button.setDefault(True)
         self._add_button.setEnabled(False)
         self._remove_button.setEnabled(False)
+
+        self._name_line_edit.textChanged.connect(self.__on_input_changed)
+        self._phone_line_edit.textChanged.connect(self.__on_input_changed)
+        
+        
+    @Slot()
+    def __on_input_changed(self) -> None:
+        """Represents the text states of the line edit widgets change."""
+
+        name = self._name_line_edit.text().strip()
+        digit_count = 0
+        for character in self._phone_line_edit.text():
+            if character.isdigit():
+                digit_count += 1
+
+        self._add_button.setEnabled(name != "" and digit_count == 10)
