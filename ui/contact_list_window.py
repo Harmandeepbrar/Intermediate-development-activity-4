@@ -29,9 +29,16 @@ class ContactListWindow(MainWindow):
         self._add_button.setEnabled(False)
         self._remove_button.setEnabled(False)
 
+        #Input changed
         self._name_line_edit.textChanged.connect(self.__on_input_changed)
         self._phone_line_edit.textChanged.connect(self.__on_input_changed)
+       
+        #Add button 
+        self._add_button.clicked.connect(self.__on_add_button_clicked)
         
+        
+        # table 
+        self._contact_table.itemSelectionChanged.connect(self.__on_selection_changed)
         
     @Slot()
     def __on_input_changed(self) -> None:
@@ -44,7 +51,7 @@ class ContactListWindow(MainWindow):
                 digit_count += 1
 
         self._add_button.setEnabled(name != "" and digit_count == 10)
-        self._add_button.clicked.connect(self.__on_add_button_clicked)
+
         
         
     def __input_recieved(self) -> None:
@@ -74,3 +81,15 @@ class ContactListWindow(MainWindow):
         self._contact_table.setItem(row, 1, phone_item)
 
         self.__input_recieved()
+        
+
+        
+    @Slot()
+    def __on_selection_changed(self) -> None:
+        """Represents the changed event selection of the table."""
+    selected_items = self._contact_table.selectedItems()
+
+    if len(selected_items) > 0:
+        self._remove_button.setEnabled(True)
+    else:
+        self._remove_button.setEnabled(False)
