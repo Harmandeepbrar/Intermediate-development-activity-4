@@ -2,7 +2,7 @@
 from PySide6.QtCore import Slot
 from ui.base.main_window import MainWindow
 from PySide6.QtWidgets import QMessageBox
-
+from PySide6.QtWidgets import QTableWidgetItem
 
 __author__ = "Harmandeep Brar"
 __version__ = "1.0.0"
@@ -24,7 +24,7 @@ class ContactListWindow(MainWindow):
 
         # Widget Initialization
         self._name_line_edit.setPlaceholderText("Contact Name")
-        self._phone_line_edit.setInputmask("(000) 000-0000;_")
+        self._phone_line_edit.setInputMask("(000) 000-0000;_")
         self._add_button.setDefault(True)
         self._add_button.setEnabled(False)
         self._remove_button.setEnabled(False)
@@ -39,6 +39,9 @@ class ContactListWindow(MainWindow):
         
         # table 
         self._contact_table.itemSelectionChanged.connect(self.__on_selection_changed)
+        
+        # remove button
+        self._remove_button.clicked.connect(self.__on_remove_button_clicked)
         
     @Slot()
     def __on_input_changed(self) -> None:
@@ -87,9 +90,30 @@ class ContactListWindow(MainWindow):
     @Slot()
     def __on_selection_changed(self) -> None:
         """Represents the changed event selection of the table."""
-    selected_items = self._contact_table.selectedItems()
+        selected_items = self._contact_table.selectedItems()
 
-    if len(selected_items) > 0:
-        self._remove_button.setEnabled(True)
-    else:
-        self._remove_button.setEnabled(False)
+        if len(selected_items) > 0:
+            self._remove_button.setEnabled(True)
+        else:
+            self._remove_button.setEnabled(False)
+    
+        
+    @Slot()
+    def __on_remove_button_clicked(self) -> None:
+        """Represents the clicked event of the remove button."""
+
+        row = self._contact_table.selectedItems()[0].row()
+        name = self._contact_table.item(row, 0).text()
+
+        message_box = QMessageBox()
+        message_box.setWindowTitle("Remove Contact")
+        message_box.setText(f"Do you want to remove the contact {name}?")
+        message_box.setIcon(QMessageBox.Icon.Question)
+        message_box.setStandardButtons(QMessageBox.StandardButton.Yes |
+                                       QMessageBox.StandardButton.No)
+        message_box.setDefaultButton(QMessageBox.StandardButton.No)
+
+        answer = message_box.exec()
+
+        if answer == QMessageBox.StandardButton.Yes:
+            self._contact_table.removeRow(row)
